@@ -12,4 +12,22 @@
         <item name="android:windowBackground">@drawable/splash_screen_drawable</item>
     </style>
 
+    <style name="PostTitle" >
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+    </style>
+
+    <style name="PostScore" >
+        <item name="android:textColor">@color/colorGreen</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:fontFamily">@font/montserrat_semibold</item>
+    </style>
+
+
+    <style name="PostSubreddit" >
+        <item name="android:textColor">@color/colorGray</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:fontFamily">@font/montserrat_light</item>
+    </style>
 </resources>
