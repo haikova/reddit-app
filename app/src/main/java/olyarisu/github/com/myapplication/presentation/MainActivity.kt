@@ -3,12 +3,15 @@ package olyarisu.github.com.myapplication.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import olyarisu.github.com.myapplication.R
+import olyarisu.github.com.myapplication.data.SubredditRepository
 import olyarisu.github.com.myapplication.data.dto.PostDataJson
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProvider(this).get(RedditPostsViewModel::class.java)
+        viewModel = getViewModel()
         initRecyclerView()
     }
 
@@ -32,9 +35,19 @@ class MainActivity : AppCompatActivity() {
         val adapter = PostsAdapter()
         list_posts.adapter = adapter
 
-        viewModel.pagedListLiveData.observe(this,
+        viewModel.posts.observe(this,
             Observer<PagedList<PostDataJson>> { t ->
                 adapter.submitList(t)
             })
+    }
+
+    private fun getViewModel(): RedditPostsViewModel {
+        return ViewModelProviders.of(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                val repo =
+                    SubredditRepository(this@MainActivity)
+                return RedditPostsViewModel(repo) as T
+            }
+        })[RedditPostsViewModel::class.java]
     }
 }

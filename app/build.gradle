@@ -4,9 +4,11 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.1"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "olyarisu.github.com.myapplication"
         minSdkVersion 21
@@ -41,11 +43,16 @@ dependencies {
 
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
 
     //RxJava
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
     implementation 'androidx.paging:paging-runtime-ktx:2.1.1'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
+
+    //Room
+    implementation "androidx.room:room-runtime:2.2.4"
+    kapt "androidx.room:room-compiler:2.2.4"
 }

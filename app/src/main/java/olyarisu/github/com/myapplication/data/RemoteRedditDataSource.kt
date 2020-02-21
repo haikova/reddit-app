@@ -1,54 +1,71 @@
 package olyarisu.github.com.myapplication.data
 
-import androidx.paging.PageKeyedDataSource
 import olyarisu.github.com.myapplication.data.api.NetworkService
 import olyarisu.github.com.myapplication.data.dto.PostDataJson
-import java.io.IOException
+import olyarisu.github.com.myapplication.data.dto.SubredditTopJson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class RemoteRedditDataSource(
     private val networkService: NetworkService = NetworkService()
-) : PageKeyedDataSource<String, PostDataJson>() {
+) {
 
-    override fun loadInitial(
-        params: LoadInitialParams<String>,
-        callback: LoadInitialCallback<String, PostDataJson>
+    fun loadPosts(
+        subreddit: String,
+        onSuccess: (posts: List<PostDataJson>) -> Unit
     ) {
-        val request = networkService.getRedditService().getTop(
-            subreddit = "gaming",
+
+        networkService.getRedditService().getTop(
+            subreddit = subreddit,
             limit = 25
-        )
-        try {
-            val response = request.execute()
-            val data = response.body()?.data
-            val items = data?.children?.map { it.data } ?: emptyList()
-            callback.onResult(items, data?.before, data?.after)
-        } catch (ioException: IOException) {
-        }
+        ).enqueue(
+            object : Callback<SubredditTopJson> {
+                override fun onFailure(call: Call<SubredditTopJson>?, t: Throwable) {
+                }
 
+                override fun onResponse(
+                    call: Call<SubredditTopJson>?,
+                    response: Response<SubredditTopJson>
+                ) {
+                    if (response.isSuccessful) {
+
+                        val data = response.body()?.data
+                        val items = data?.children?.map { it.data } ?: emptyList()
+                        onSuccess(items)
+                    }
+                }
+            }
+        )
     }
 
-    override fun loadAfter(
-        params: LoadParams<String>,
-        callback: LoadCallback<String, PostDataJson>
+    fun loadPostsAfter(
+        subreddit: String,
+        last: PostDataJson,
+        onSuccess: (posts: List<PostDataJson>) -> Unit
     ) {
-        val request = networkService.getRedditService().getTopAfter(
-            subreddit = "gaming",
+        networkService.getRedditService().getTopAfter(
+            subreddit = subreddit,
             limit = 25,
-            after = params.key
-        )
-        try {
-            val response = request.execute()
-            val data = response.body()?.data
-            val items = data?.children?.map { it.data } ?: emptyList()
-            callback.onResult(items, data?.after)
-        } catch (ioException: IOException) {
-        }
-    }
+            after = last.name
+        ).enqueue(
+            object : Callback<SubredditTopJson> {
+                override fun onFailure(call: Call<SubredditTopJson>?, t: Throwable) {
+                }
 
-    override fun loadBefore(
-        params: LoadParams<String>,
-        callback: LoadCallback<String, PostDataJson>
-    ) {
+                override fun onResponse(
+                    call: Call<SubredditTopJson>?,
+                    response: Response<SubredditTopJson>
+                ) {
+                    if (response.isSuccessful) {
+
+                        val data = response.body()?.data
+                        val items = data?.children?.map { it.data } ?: emptyList()
+                        onSuccess(items)
+                    }
+                }
+            }
+        )
     }
 }
