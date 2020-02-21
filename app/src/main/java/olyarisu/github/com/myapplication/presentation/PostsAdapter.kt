@@ -11,7 +11,9 @@ import kotlinx.android.synthetic.main.item_post.view.*
 import olyarisu.github.com.myapplication.R
 import olyarisu.github.com.myapplication.data.dto.PostDataJson
 
-class PostsAdapter : PagedListAdapter<PostDataJson, PostViewHolder>(DIFF_CALLBACK) {
+class PostsAdapter(
+    private val onItemClick: ((String) -> Unit)? = null
+) : PagedListAdapter<PostDataJson, PostViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         return PostViewHolder(
@@ -28,6 +30,7 @@ class PostsAdapter : PagedListAdapter<PostDataJson, PostViewHolder>(DIFF_CALLBAC
             holder.titlePost.text = title
             holder.scorePost.text = score.toString()
             holder.subredditPost.text = subreddit_name_prefixed
+            holder.itemView.setOnClickListener { onItemClick?.invoke(permalink) }
         }
     }
 

@@ -1,5 +1,7 @@
 package olyarisu.github.com.myapplication.presentation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.Observer
@@ -26,13 +28,18 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
     }
 
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         list_posts.addItemDecoration(decoration)
 
         list_posts.layoutManager = LinearLayoutManager(this)
 
-        val adapter = PostsAdapter()
+        val adapter = PostsAdapter { url ->
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.reddit.com$url"))
+            intent.resolveActivity(packageManager)?.let {
+                startActivity(intent)
+            }
+        }
         list_posts.adapter = adapter
 
         viewModel.posts.observe(this,
