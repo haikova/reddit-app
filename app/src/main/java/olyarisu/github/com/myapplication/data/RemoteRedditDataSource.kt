@@ -12,17 +12,27 @@ class RemoteRedditDataSource(
     private val networkService: NetworkService = NetworkService()
 ) {
 
+    private var retry: (() -> Any)? = null
+
+    fun retryFailed() {
+        val prevRetry = retry
+        retry = null
+        prevRetry?.invoke()
+    }
+
     fun loadPosts(
         subreddit: String,
-        onSuccess: (posts: List<PostDataJson>) -> Unit
+        onSuccess: (posts: List<PostDataJson>) -> Unit,
+        onError: (error: String) -> Unit
     ) {
-
         networkService.getRedditService().getTop(
             subreddit = subreddit,
             limit = 25
         ).enqueue(
             object : Callback<SubredditTopJson> {
                 override fun onFailure(call: Call<SubredditTopJson>?, t: Throwable) {
+                    retry = { loadPosts(subreddit, onSuccess, onError) }
+                    onError(t.message ?: "Unknown error")
                 }
 
                 override fun onResponse(
@@ -30,10 +40,12 @@ class RemoteRedditDataSource(
                     response: Response<SubredditTopJson>
                 ) {
                     if (response.isSuccessful) {
-
                         val data = response.body()?.data
                         val items = data?.children?.map { it.data } ?: emptyList()
                         onSuccess(items)
+                    } else {
+                        retry = { loadPosts(subreddit, onSuccess, onError) }
+                        onError(response.errorBody()?.string() ?: "Unknown error")
                     }
                 }
             }
@@ -43,7 +55,8 @@ class RemoteRedditDataSource(
     fun loadPostsAfter(
         subreddit: String,
         last: PostDataJson,
-        onSuccess: (posts: List<PostDataJson>) -> Unit
+        onSuccess: (posts: List<PostDataJson>) -> Unit,
+        onError: (error: String) -> Unit
     ) {
         networkService.getRedditService().getTopAfter(
             subreddit = subreddit,
@@ -52,6 +65,8 @@ class RemoteRedditDataSource(
         ).enqueue(
             object : Callback<SubredditTopJson> {
                 override fun onFailure(call: Call<SubredditTopJson>?, t: Throwable) {
+                    retry = { loadPostsAfter(subreddit, last, onSuccess, onError) }
+                    onError(t.message ?: "Unknown error")
                 }
 
                 override fun onResponse(
@@ -59,10 +74,12 @@ class RemoteRedditDataSource(
                     response: Response<SubredditTopJson>
                 ) {
                     if (response.isSuccessful) {
-
                         val data = response.body()?.data
                         val items = data?.children?.map { it.data } ?: emptyList()
                         onSuccess(items)
+                    } else {
+                        retry = { loadPostsAfter(subreddit, last, onSuccess, onError) }
+                        onError(response.errorBody()?.string() ?: "Unknown error")
                     }
                 }
             }

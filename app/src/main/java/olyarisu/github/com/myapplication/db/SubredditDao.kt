@@ -15,4 +15,7 @@ interface SubredditDao {
 
     @Query("SELECT * FROM posts")
     fun postsBySubreddit(): DataSource.Factory<Int, PostDataJson>
+
+    @Query("DELETE FROM posts")
+    fun deleteBySubreddit()
 }
