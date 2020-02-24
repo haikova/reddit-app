@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import olyarisu.github.com.myapplication.R
 import olyarisu.github.com.myapplication.data.SubredditRepository
 import olyarisu.github.com.myapplication.data.dto.PostDataJson
+import olyarisu.github.com.myapplication.util.CustomTabsHelper
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,9 +42,22 @@ class MainActivity : AppCompatActivity() {
         list_posts.layoutManager = LinearLayoutManager(this)
 
         val adapter = PostsAdapter { url ->
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.reddit.com$url"))
-            intent.resolveActivity(packageManager)?.let {
-                startActivity(intent)
+            val packageName = CustomTabsHelper.getPackageNameToUse(this)
+
+            val uri = Uri.parse("https://www.reddit.com$url")
+            //If we cant find a package name, it means theres no browser that supports
+            //Chrome Custom Tabs installed
+            if (packageName == null) {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.resolveActivity(packageManager)?.let {
+                    startActivity(intent)
+                }
+            } else {
+                val builder = CustomTabsIntent.Builder()
+                builder.setToolbarColor(resources.getColor(R.color.colorPrimary))
+                val customTabsIntent = builder.build()
+                customTabsIntent.intent.setPackage(packageName)
+                customTabsIntent.launchUrl(this, uri)
             }
         }
         list_posts.adapter = adapter

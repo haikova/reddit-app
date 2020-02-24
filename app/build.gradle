@@ -58,4 +58,6 @@ dependencies {
     //Room
     implementation "androidx.room:room-runtime:2.2.4"
     kapt "androidx.room:room-compiler:2.2.4"
+
+    implementation 'androidx.browser:browser:1.2.0'
 }
