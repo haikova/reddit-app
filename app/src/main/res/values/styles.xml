@@ -6,28 +6,38 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
         <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar</item>
     </style>
 
-    <style name="AppTheme.Splash" >
+    <style name="AppTheme.Splash">
         <item name="android:windowBackground">@drawable/splash_screen_drawable</item>
     </style>
 
-    <style name="PostTitle" >
+    <style name="ActionBarStyle" parent="@style/Widget.MaterialComponents.ActionBar.Solid">
+        <item name="titleTextStyle">@style/TitleActionBar</item>
+    </style>
+
+    <style name="TitleActionBar">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textSize">@dimen/text_size_action_bar</item>
+        <item name="android:fontFamily">@font/montserrat_semibold</item>
+    </style>
+
+    <style name="PostTitle">
         <item name="android:textColor">@color/colorBlack</item>
         <item name="android:textSize">@dimen/text_size</item>
         <item name="android:fontFamily">@font/montserrat_medium</item>
     </style>
 
-    <style name="PostScore" >
+    <style name="PostScore">
         <item name="android:textColor">@color/colorGreen</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:fontFamily">@font/montserrat_semibold</item>
     </style>
 
-
-    <style name="PostSubreddit" >
+    <style name="PostSubreddit">
         <item name="android:textColor">@color/colorGray</item>
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:fontFamily">@font/montserrat_light</item>
