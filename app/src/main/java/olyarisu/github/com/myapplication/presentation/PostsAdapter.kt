@@ -28,12 +28,18 @@ class PostsAdapter(
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         getItem(position)?.apply {
             holder.titlePost.text = title
-            holder.scorePost.text = score.toString()
+            holder.scorePost.text = mapScore(score)
             holder.subredditPost.text = subreddit_name_prefixed
             holder.itemView.setOnClickListener { onItemClick?.invoke(permalink) }
         }
     }
 
+    private fun mapScore(score: Int): String {
+        return when {
+            score > 999 -> "%.1f".format(score.toFloat()/1000)+"k"
+            else -> score.toString()
+        }
+    }
 
     companion object {
         private val DIFF_CALLBACK = object :
