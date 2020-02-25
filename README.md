@@ -17,7 +17,9 @@ Here I’d like to highlight some aspects of the implementation that will help t
 - Network failures are handled and last request is stored with possibility to retry.
 - New Adaptive icon is used (not just png) for better UI on new Android phones.
 
-## Build
+## Build and Testing
+There're simple unit tests inside the app, one of them checks the correct formatting of the rating. Tests are checked during the build on CI for every commit.
+
 The application is built and distributed via AppCenter CI, the new build is generated on each commit.
 
 AppCenter allows to distribute builds publicly, and here’s the [download link](https://install.appcenter.ms/users/haikova/apps/reddit-gaming/distribution_groups/public%20distribution)
