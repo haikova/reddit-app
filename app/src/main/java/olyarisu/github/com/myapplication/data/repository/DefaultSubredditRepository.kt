@@ -1,6 +1,5 @@
 package olyarisu.github.com.myapplication.data.repository
 
-
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList

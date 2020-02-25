@@ -9,8 +9,6 @@ class RedditPostsViewModel(
     private val repository: SubredditRepository
 ) : ViewModel() {
 
-
-
     private val resutPosts = repository.getPosts(SUBREDDIT_NAME)
     val posts = resutPosts.pagedListPost
     val networkError = resutPosts.error
