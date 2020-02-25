@@ -1,9 +1,10 @@
-package olyarisu.github.com.myapplication.presentation
+package olyarisu.github.com.myapplication.presentation.splash
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import olyarisu.github.com.myapplication.R
+import olyarisu.github.com.myapplication.presentation.main.MainActivity
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

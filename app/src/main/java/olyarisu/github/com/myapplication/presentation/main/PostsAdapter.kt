@@ -1,4 +1,4 @@
-package olyarisu.github.com.myapplication.presentation
+package olyarisu.github.com.myapplication.presentation.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +9,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_post.view.*
 import olyarisu.github.com.myapplication.R
-import olyarisu.github.com.myapplication.data.dto.PostDataJson
+import olyarisu.github.com.myapplication.data.api.dto.PostDataJson
+import olyarisu.github.com.myapplication.domain.entity.Post
+import olyarisu.github.com.myapplication.presentation.main.mapper.map
+import olyarisu.github.com.myapplication.presentation.main.viewdata.PostView
 
 class PostsAdapter(
     private val onItemClick: ((String) -> Unit)? = null
-) : PagedListAdapter<PostDataJson, PostViewHolder>(DIFF_CALLBACK) {
+) : PagedListAdapter<Post, PostViewHolder>(
+    DIFF_CALLBACK
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         return PostViewHolder(
@@ -26,32 +31,25 @@ class PostsAdapter(
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        getItem(position)?.apply {
+        getItem(position)?.map()?.apply {
             holder.titlePost.text = title
-            holder.scorePost.text = mapScore(score)
-            holder.subredditPost.text = subreddit_name_prefixed
-            holder.itemView.setOnClickListener { onItemClick?.invoke(permalink) }
-        }
-    }
-
-    private fun mapScore(score: Int): String {
-        return when {
-            score > 999 -> "%.1f".format(score.toFloat()/1000)+"k"
-            else -> score.toString()
+            holder.scorePost.text = score
+            holder.subredditPost.text = subreddit
+            holder.itemView.setOnClickListener { onItemClick?.invoke(link) }
         }
     }
 
     companion object {
         private val DIFF_CALLBACK = object :
-            DiffUtil.ItemCallback<PostDataJson>() {
+            DiffUtil.ItemCallback<Post>() {
             override fun areItemsTheSame(
-                oldPost: PostDataJson,
-                newPost: PostDataJson
+                oldPost: Post,
+                newPost: Post
             ) = oldPost.id == newPost.id
 
             override fun areContentsTheSame(
-                oldPost: PostDataJson,
-                newPost: PostDataJson
+                oldPost: Post,
+                newPost: Post
             ) = oldPost == newPost
         }
     }

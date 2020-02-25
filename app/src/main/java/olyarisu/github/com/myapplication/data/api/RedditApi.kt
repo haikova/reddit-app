@@ -1,6 +1,6 @@
 package olyarisu.github.com.myapplication.data.api
 
-import olyarisu.github.com.myapplication.data.dto.SubredditTopJson
+import olyarisu.github.com.myapplication.data.api.dto.SubredditTopJson
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

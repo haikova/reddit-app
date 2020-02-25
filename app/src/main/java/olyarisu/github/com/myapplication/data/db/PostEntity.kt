@@ -1,15 +1,14 @@
-package olyarisu.github.com.myapplication.data.dto
+package olyarisu.github.com.myapplication.data.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "posts")
-data class PostDataJson(
+data class PostEntity(
     @PrimaryKey val id: String,
-    val permalink: String,
+    val link: String,
     val score: Int,
-    val subreddit_name_prefixed: String,
+    val subreddit: String,
     val title: String,
     val name: String
-
 )

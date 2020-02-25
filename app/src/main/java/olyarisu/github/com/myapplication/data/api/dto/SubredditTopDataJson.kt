@@ -1,4 +1,4 @@
-package olyarisu.github.com.myapplication.data.dto
+package olyarisu.github.com.myapplication.data.api.dto
 
 data class SubredditTopDataJson(
     val after: String?,
