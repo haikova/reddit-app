@@ -1,6 +1,7 @@
 package olyarisu.github.com.myapplication.di
 
 import androidx.room.Room
+import kotlinx.coroutines.CoroutineScope
 import olyarisu.github.com.myapplication.data.api.RedditApi
 import olyarisu.github.com.myapplication.data.datasource.DefaultLocalRedditDatasource
 import olyarisu.github.com.myapplication.data.datasource.DefaultRemoteRedditDataSource
@@ -21,13 +22,18 @@ private const val DB_NAME = "Reddit.db"
 
 val viewModelModule = module {
     viewModel {
-        RedditPostsViewModel(get())
+        RedditPostsViewModel()
     }
 }
 
 val repositoryModule = module {
-    factory {
-        DefaultSubredditRepository(get(), get()) as SubredditRepository
+    factory { (coroutineScope: CoroutineScope, subredditName: String) ->
+        DefaultSubredditRepository(
+            get(),
+            get(),
+            coroutineScope,
+            subredditName
+        ) as SubredditRepository
     }
     factory {
         DefaultLocalRedditDatasource(get()) as LocalRedditDatasource

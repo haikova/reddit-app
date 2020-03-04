@@ -1,19 +1,15 @@
 package olyarisu.github.com.myapplication.data.datasource
 
+import olyarisu.github.com.myapplication.data.api.dto.SubredditTopJson
 import olyarisu.github.com.myapplication.domain.entity.Post
 
 interface RemoteRedditDataSource {
+    suspend fun loadPosts(
+        subreddit: String
+    ): List<Post>
 
-    fun retryFailed()
-    fun loadPosts(
+    suspend fun loadPostsAfter(
         subreddit: String,
-        onSuccess: (posts: List<Post>) -> Unit,
-        onError: (error: String) -> Unit
-    )
-    fun loadPostsAfter(
-        subreddit: String,
-        last: String,
-        onSuccess: (posts: List<Post>) -> Unit,
-        onError: (error: String) -> Unit
-    )
+        last: String
+    ): List<Post>
 }
