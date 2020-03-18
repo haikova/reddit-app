@@ -11,11 +11,11 @@ import olyarisu.github.com.myapplication.data.api.dto.PostDataJson
 interface SubredditDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(posts: List<PostEntity>)
+    suspend fun insert(posts: List<PostEntity>)
 
     @Query("SELECT * FROM posts")
     fun postsBySubreddit(): DataSource.Factory<Int, PostEntity>
 
     @Query("DELETE FROM posts")
-    fun deleteBySubreddit()
+    suspend fun deleteBySubreddit()
 }

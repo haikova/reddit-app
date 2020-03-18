@@ -8,13 +8,13 @@ import retrofit2.http.Query
 
 interface RedditApi {
     @GET("/r/{subreddit}/top.json")
-    fun getTop(
+    suspend fun getTop(
         @Path("subreddit") subreddit: String,
-        @Query("limit") limit: Int): Call<SubredditTopJson>
+        @Query("limit") limit: Int): SubredditTopJson
 
     @GET("/r/{subreddit}/top.json")
-    fun getTopAfter(
+    suspend fun getTopAfter(
         @Path("subreddit") subreddit: String,
         @Query("after") after: String,
-        @Query("limit") limit: Int): Call<SubredditTopJson>
+        @Query("limit") limit: Int): SubredditTopJson
 }

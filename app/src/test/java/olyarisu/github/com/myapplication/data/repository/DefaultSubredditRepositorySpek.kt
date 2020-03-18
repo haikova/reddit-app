@@ -1,36 +1,90 @@
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import androidx.arch.core.executor.ArchTaskExecutor
+import androidx.arch.core.executor.TaskExecutor
+import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import olyarisu.github.com.myapplication.data.datasource.DefaultLocalRedditDatasource
 import olyarisu.github.com.myapplication.data.datasource.DefaultRemoteRedditDataSource
 import olyarisu.github.com.myapplication.data.repository.DefaultSubredditRepository
+import olyarisu.github.com.myapplication.domain.entity.Post
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-
 
 class DefaultSubredditRepositorySpek : Spek({
 
     val localRedditDatasourceMock = mock<DefaultLocalRedditDatasource>()
     val remoteRedditDataSourceMock = mock<DefaultRemoteRedditDataSource>()
+    val coroutineScope = mock<CoroutineScope>()
+    val subredditName = "gaming"
 
     val repository =
-        DefaultSubredditRepository(localRedditDatasourceMock, remoteRedditDataSourceMock)
+        DefaultSubredditRepository(
+            localRedditDatasourceMock,
+            remoteRedditDataSourceMock,
+            coroutineScope,
+            subredditName
+        )
+
+    // @Rule val rule = InstantTaskExecutorRule()
+    beforeEachTest {
+        ArchTaskExecutor.getInstance().setDelegate(object : TaskExecutor() {
+            override fun executeOnDiskIO(runnable: Runnable) {
+                runnable.run()
+            }
+
+            override fun isMainThread(): Boolean {
+                return true
+            }
+
+            override fun postToMainThread(runnable: Runnable) {
+                runnable.run()
+            }
+        })
+
+        reset(localRedditDatasourceMock)
+    }
+
+    afterEachTest { ArchTaskExecutor.getInstance().setDelegate(null) }
 
     describe("repository refresh") {
-        repository.refresh("gaming")
+        val error = Throwable()
+        val posts = emptyList<Post>()
 
-        it("should call loadPosts for remoteRedditDataSource") {
-            verify(remoteRedditDataSourceMock).loadPosts(eq("gaming"), any(), any())
+        it("should load posts from remoteRedditDataSource") {
+            runBlockingTest {
+                repository.refresh()
+
+                verify(remoteRedditDataSourceMock).loadPosts(eq(subredditName))
+            }
+        }
+
+        context("when remoteDataSource successfully load posts") {
+
+            it("should update localRedditDatasource with loaded posts") {
+                runBlockingTest {
+                    whenever(remoteRedditDataSourceMock.loadPosts(subredditName)).thenReturn(posts)
+                    repository.refresh()
+
+                    verify(localRedditDatasourceMock).updateBySubreddit(eq(subredditName), eq(posts))
+                }
+            }
+        }
+
+        context("when remoteDataSource load posts with error") {
+
+            it("should not update localRedditDatasource") {
+                runBlockingTest {
+                    doAnswer { error }
+                        .whenever(remoteRedditDataSourceMock)
+                        .loadPosts(subredditName)
+                    repository.refresh()
+
+                    verify(localRedditDatasourceMock, never()).updateBySubreddit(
+                        eq(subredditName),
+                        eq(posts)
+                    )
+                }
+            }
         }
     }
-
-    describe("repository retryLastFailedOperation") {
-        repository.retryLastFailedOperation()
-
-        it("should call retryFailed for remoteRedditDataSource") {
-            verify(remoteRedditDataSourceMock).retryFailed()
-        }
-    }
-
 })

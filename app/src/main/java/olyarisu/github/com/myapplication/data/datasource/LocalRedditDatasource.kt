@@ -6,6 +6,6 @@ import olyarisu.github.com.myapplication.domain.entity.Post
 interface LocalRedditDatasource {
 
     fun postsBySubreddit(subreddit: String): DataSource.Factory<Int, Post>
-    fun insert(posts: List<Post>)
-    fun updateBySubreddit(subreddit: String, posts: List<Post>)
+    suspend fun insert(posts: List<Post>)
+    suspend fun updateBySubreddit(subreddit: String, posts: List<Post>)
 }
